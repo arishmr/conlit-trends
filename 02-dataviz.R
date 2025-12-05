@@ -40,6 +40,7 @@ plotdata <- plotdata %>%
                           "token_count" ~ "Total Character Count",
                           "avg_sentence_length" ~ "Average Sentence Length",
                           "goodreads_avg" ~ "Average Goodreads Rating"))
+plotdata$variable <- factor(plotdata$variable, levels = c("Average Sentence Length", "Average Word Length", "Total Character Count", "Average Goodreads Rating"))
 ggplot(data = plotdata, aes(x = Pubdate, y = value, colour = variable)) +
   geom_point(size = 0.2, alpha = 0.2) +
   geom_line(stat = "smooth", method = "loess", se = FALSE) +
