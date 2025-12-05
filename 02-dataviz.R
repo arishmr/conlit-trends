@@ -1,3 +1,31 @@
+## Descriptive stats for total length and average sentence/word length
+means <- data %>% group_by(Pubdate) %>% summarise(
+  length = mean(token_count),
+  sentences = mean(avg_sentence_length),
+  words = mean(avg_word_length),
+  ratings = mean(goodreads_avg)
+) %>% ungroup()
+
+write.csv(means, "results/means.csv", row.names = F)
+
+plotdata <- means %>% pivot_longer(
+  cols = c("length", "sentences", "words", "ratings"),
+  names_to = "variable",
+  values_to = "value"
+)
+ggplot(data = plotdata, aes(x = Pubdate, y = value, colour = variable)) +
+  geom_point(size = 0.5, alpha = 0.75) +
+  geom_line(stat = "smooth", method = "loess", se = FALSE) +
+  facet_wrap(~ factor(variable), scales="free_y") +
+  labs(x = "Year", y = "Value", colour = "") +
+  theme_classic() +
+  theme(panel.spacing.x = unit(1, "lines")) +
+  theme(panel.spacing.y = unit(1.5, "lines")) +
+  theme(legend.position = "none") +
+  scale_color_brewer(palette="Set1") +
+  theme(axis.title = element_text(face="bold"))
+
+
 ## Historical trends in publishing: time series of total length and average sentence/word length
 
 plotdata <- data %>% pivot_longer(
@@ -14,7 +42,7 @@ plotdata <- plotdata %>%
                           "goodreads_avg" ~ "Average Goodreads Rating"))
 ggplot(data = plotdata, aes(x = Pubdate, y = value, colour = variable)) +
   geom_point(size = 0.2, alpha = 0.2) +
-  geom_line(stat = "smooth", method = "lm", se = FALSE) +
+  geom_line(stat = "smooth", method = "loess", se = FALSE) +
   facet_wrap(~ factor(variable), scales="free_y") +
   labs(x = "Year", y = "Value", colour = "") +
   theme_classic() +
